@@ -9,17 +9,12 @@
 // Website: https://smiles.cards
 //
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.9;
+pragma solidity 0.8.10;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "./enumerable_simple.sol";
+import "IERC20.sol";
+import "Ownable.sol";
+import "enumerable_simple.sol";
 
-contract OwnableDelegateProxy {}
-
-contract ProxyRegistry {
-    mapping(address => OwnableDelegateProxy) public proxies;
-}
 
 contract Smiles is ERC721EnumerableSimple, Ownable {
 
@@ -32,18 +27,13 @@ contract Smiles is ERC721EnumerableSimple, Ownable {
         bytes16 desc;
     }
 
-    uint64 public MintPrice = 0.07 ether;
-    uint16 public maxSupply = 10000;
-    uint16 public giveaway_reserved = 200;
-    uint16 public pre_mint_reserved = 1000;
-    uint128 public REVEALED; // uint128
-    bool public mint_active = false;
-    bool public pre_mint_paused = true;
+    uint16 public maxSupply = 1000;
+    uint16 public giveaway_reserved = 50;
+    uint128 public REVEALED; 
+    bool public mint_active = true;
     address public constant CommunityFund = 0xBfDA4Ee93f99612f282F8bC4C234331406dbD4a0;
-    bytes32 public merkleRoot;
     ASCIISmilesToken public ASCToken;
-    address proxyRegistryAddress;
-   
+
     iInfo[] private Hat;
     iInfo[] private Eye;
     iInfo[] private Nose;
@@ -55,14 +45,10 @@ contract Smiles is ERC721EnumerableSimple, Ownable {
 
     event MintStopped();
     event MintStarted();
-    event PreMintPaused();
-    event PreMintStarted();
     event Revealed();
-    event MerkleRootUpdated(bytes32 new_merkle_root);
 
-    constructor(address _proxyRegistryAddress) ERC721("ASCII Smiles", "SML") {
-        proxyRegistryAddress = _proxyRegistryAddress;
-        
+    constructor() ERC721("ASCII Smiles", "SML") {
+
         Hat.push(iInfo('('   ,  9, 'Egghead'      ));
         Hat.push(iInfo('d'   , 19, 'Baseball'     ));
         Hat.push(iInfo('~'   , 29, 'Baby'         ));
@@ -220,7 +206,7 @@ contract Smiles is ERC721EnumerableSimple, Ownable {
         string memory out = string(abi.encodePacked(smilePart[0],smilePart[1],smilePart[2],smilePart[3],smilePart[4]));
         return out;
     }
-    
+
     function tokenURI(uint256 tokenID) override public view returns (string memory) {
         require(_exists(tokenID), "Nonexistent token");
 
@@ -290,7 +276,7 @@ contract Smiles is ERC721EnumerableSimple, Ownable {
         output = string(abi.encodePacked('data:application/json;base64,', jsonOut));
         return output;
     }
-    
+
     function giveAway(address[] calldata _to) external onlyOwner {
         uint16 length = uint16(_to.length);
         require(giveaway_reserved >= length, "Exceeds giveaway supply" );
@@ -300,28 +286,12 @@ contract Smiles is ERC721EnumerableSimple, Ownable {
         }
     }
 
-    function preMint(bytes32[] calldata merkleProof, uint16 num) public payable {
-        require( !pre_mint_paused, "Pre mint is paused");
-        require( !_msgSender().isContract(), "No contract allowed" );
-        require( num > 0 && num <= 10, "Maximum 10 Smiles" );
-        require( msg.value >= MintPrice * 5 / 7 * num, "Not enought Ether" );
-        require( num <= pre_mint_reserved, "Exceeds pre mint supply" );
-        require( balanceOf(_msgSender()) + num <= 10, "Maximum 10 Smiles per wallet" );
-        require( MerkleProof.verify(merkleProof, merkleRoot,  keccak256(abi.encodePacked(_msgSender())) ), "Invalid proof");
-
-        pre_mint_reserved = pre_mint_reserved - num;
-        for(uint256 i; i < num; i++) {
-            _mint(_msgSender(), totalSupply());
-        }
-    }
-
     function mintASCIISmiles(uint256 num) public payable {
         require( mint_active, "Mint is stopped");
         require( !_msgSender().isContract(), "No contract allowed");
         require( num > 0 && num <= 5, "Maximum 5 Smiles" );
         require( balanceOf(_msgSender()) + num <= 10, "Maximum 10 Smiles per wallet" );
         require( totalSupply() + num <= maxSupply - giveaway_reserved, "Exceeds maximum supply" );
-        require( msg.value >= MintPrice * num, "Not enought Ether" );
 
         for(uint256 i; i < num; i++) {
             _mint(_msgSender(), totalSupply());
@@ -332,10 +302,6 @@ contract Smiles is ERC721EnumerableSimple, Ownable {
         require( REVEALED == 0, "Only once");
         REVEALED = uint128(uint256(blockhash(block.number - 1)));
         emit Revealed();
-    }
-
-    function setPrice(uint64 newPrice) public onlyOwner {
-        MintPrice = newPrice;
     }
 
     function setNickname(uint256 tokenID, string memory nick) public {
@@ -356,50 +322,19 @@ contract Smiles is ERC721EnumerableSimple, Ownable {
             result = bytesToStr(_nickname[tokenID]);
     }
 
-    function stopMint() public onlyOwner {
-        mint_active = false;
-        emit MintStopped();
-    }
-
-    function startMint() public onlyOwner {
-        mint_active = true;
-        emit MintStarted();
-    }
-
-    function pausePreMint() public onlyOwner {
-        pre_mint_paused = true;
-        emit PreMintPaused();
-    }
-
-    function unpausePreMint() public onlyOwner {
-        pre_mint_paused = false;
-        emit PreMintStarted();
-    }
-
-    function updateMerkleRoot(bytes32 newmerkleRoot) public onlyOwner {
-        merkleRoot = newmerkleRoot;
-        emit MerkleRootUpdated(merkleRoot);
-    }
-
     function setASCToken(address _token) public onlyOwner {
         ASCToken = ASCIISmilesToken(_token);
     }
 
-    function withdraw() public onlyOwner {
+    function withdraw() public {
         uint256 _balance = address(this).balance ;
         require(_balance > 0, "Call without balance");
-        payable(_msgSender()).transfer(_balance / 2);
+        payable(0x13D291D736501C891C2D689D28f64461BEc6d26B).transfer(_balance / 2);
         payable(CommunityFund).transfer(address(this).balance);
     }
 
-    function reclaimERC20(IERC20 erc20Token) public onlyOwner {
-        erc20Token.transfer(msg.sender, erc20Token.balanceOf(address(this)));
-    }
-
-    function decreaseMaxSupply(uint16 newMaxSupply) external onlyOwner {
-        require(newMaxSupply < maxSupply, "only decrease");
-        require(newMaxSupply >= totalSupply(), "bellow supply");
-        maxSupply = newMaxSupply;
+    function reclaimERC20(IERC20 erc20Token) public {
+        erc20Token.transfer(0x13D291D736501C891C2D689D28f64461BEc6d26B, erc20Token.balanceOf(address(this)));
     }
 
     function walletOfOwner(address _owner) public view returns(uint256[] memory) {
@@ -412,29 +347,9 @@ contract Smiles is ERC721EnumerableSimple, Ownable {
         return tokensId;
     }
 
-    function isApprovedForAll(address owner, address operator) override public view returns (bool) {
-        // Whitelist OpenSea proxy contract for easy trading.
-        ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
-        if (address(proxyRegistry.proxies(owner)) == operator) {
-            return true;
-        }
-        return super.isApprovedForAll(owner, operator);
-    }
-
-
-    function is_pre_mint_allowed(bytes32[] calldata merkleProof, address account) public view  returns (bool) {
-        if( balanceOf(account) >= 10 )
-            return false;
-        if( account.isContract() )
-            return false;
-        if( MerkleProof.verify(merkleProof, merkleRoot,  keccak256(abi.encodePacked(account))) )
-            return true;
-        return false;
-    }
-    
-    function royaltyInfo(uint256, uint256 salePrice) external view returns (address receiver, uint256 royaltyAmount) {
-        receiver = owner();
-        royaltyAmount = (salePrice * 2) / 100;
+    function royaltyInfo(uint256, uint256 salePrice) external pure returns (address receiver, uint256 royaltyAmount) {
+        receiver = 0x13D291D736501C891C2D689D28f64461BEc6d26B;
+        royaltyAmount = (salePrice * 3) / 100;
     }
 
     function supportsInterface(bytes4 interfaceId) public view override(ERC721EnumerableSimple) returns (bool) {
@@ -478,6 +393,7 @@ contract Smiles is ERC721EnumerableSimple, Ownable {
         }
         return string(output);
     }
+
 }
 
 /// [MIT License]
@@ -544,35 +460,6 @@ library Base64 {
 
 interface ASCIISmilesToken is IERC20 {
     function payNick(address from, uint256 amount) external;
-}
-
-// @openzeppelin/contracts/cryptography/MerkleProof.sol
-
-library MerkleProof {
-    /**
-     * @dev Returns true if a `leaf` can be proved to be a part of a Merkle tree
-     * defined by `root`. For this, a `proof` must be provided, containing
-     * sibling hashes on the branch from the leaf to the root of the tree. Each
-     * pair of leaves and each pair of pre-images are assumed to be sorted.
-     */
-    function verify(bytes32[] memory proof, bytes32 root, bytes32 leaf) internal pure returns (bool) {
-        bytes32 computedHash = leaf;
-
-        for (uint256 i; i < proof.length; i++) {
-            bytes32 proofElement = proof[i];
-
-            if (computedHash <= proofElement) {
-                // Hash(current computed hash + current element of the proof)
-                computedHash = keccak256(abi.encodePacked(computedHash, proofElement));
-            } else {
-                // Hash(current element of the proof + current computed hash)
-                computedHash = keccak256(abi.encodePacked(proofElement, computedHash));
-            }
-        }
-
-        // Check if the computed hash (root) is equal to the provided root
-        return computedHash == root;
-    }
 }
 
 interface IERC2981 is IERC165 {
