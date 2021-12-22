@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, width=1000">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    <link rel="preload" as="font" type="font/ttf" href="DOSVGA.ttf" crossorigin="anonymous">
+    <title>ASCII Smiles NFT My cards</title>
+    <style>
+        @font-face {
+            font-family: DOS_VGA;
+            src: url(DOSVGA.ttf);
+        }
+        body {
+            font-family: DOS_VGA, monospace;
+            font-size: 16px;
+            line-height: 1;
+            width: 1000px;
+            background-color: #000080;
+            color: #00e3f1;
+        }
+        pre {
+            font-family: DOS_VGA, monospace;
+            font-size: 16px;
+        }
+        pre span {
+            color: #fafa02;
+        }
+        b {
+            color: white;
+            font-size: 16px;
+            font-weight: normal;
+        }
+
+        a{
+            text-decoration: none;
+            color: white;
+        }
+        #divConnect {
+            text-align: center;
+        }
+        div#blockchains {
+            width: 800px;
+            border: double 4px #00e3f1;
+            padding: 16px 8px;
+            margin: 16px auto;
+            text-align: center;
+        }
+        div#blockchains span {
+            cursor: pointer;
+        }
+        span#chainWrong {
+            display: none;
+            color: red;
+        }
+        div#blockchains span.active {
+            color: white;
+        }
+
+        div#myCards {
+            min-height: 299px;
+            margin: 32px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .smilediv .cardDiv {
+            width: 250px;
+            position: relative;
+        }
+        .smilediv .cardDiv >img {
+            width: 160px;
+            height: 270px;
+            margin: 0 45px;
+        }
+
+        .smilediv .cardName{
+            width: 250px;
+            height: 40px;
+            text-align: center;
+            position: relative;
+        }
+        .smilediv .cardName >div {
+            position: absolute;
+            right: 5px;
+            top:2px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .smilediv .cardName .editImg {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xml:space='preserve' viewBox='0 0 1000 1000'%3E%3Cpath fill='%23CCC' d='M968 32c37 36 37 95 0 132l-44 44L792 76l44-44c37-37 96-37 132 0zM308 560l-44 176 176-44 440-440-132-132-440 440zm439-87v403H124V253h403l124-124H0v871h871V349L747 473z'/%3E%3C/svg%3E");
+        }
+        .smilediv .cardName .saveImg {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23CCC' d='M15 10h4l-7 8-7-8h4V0h6v10zm3.2-8.2L17 3.4a10 10 0 1 1-10 0L5.8 1.8A12 12 0 0 0 12 24a12 12 0 0 0 6.2-22.2z'/%3E%3C/svg%3E");
+        }
+
+        .smilediv .inputName {
+            width: 235px;
+            font: normal 16px 'DOS_VGA';
+            text-align: center;
+            height: 35px;
+            line-height: 35px;
+            background-color: navy;
+            color: white;
+            border: none;
+        }
+
+        #mintInfo, #MintFinished {
+            display: none;
+        }
+        div#Mint {
+            width: 600px;
+            border: double 4px #00e3f1;
+            padding: 16px 8px;
+            margin: 16px 0;
+        }
+        .AsciiButton {
+            background-color: white;
+            padding: 3px 30px;
+            cursor: pointer;
+            border: 0;
+            color: #222;
+            font-weight: bold;
+            box-shadow: 8px 8px 0 #000;
+        }
+        .AsciiButton:hover {
+            background-color: #f8fc50;
+        }
+        .AsciiButton:focus {
+            background-color: #f8fc50;
+        }
+        .AsciiButton:active {
+            background-color: #f8fc50;
+            box-shadow: none;
+            transform: translate(3px, 3px);
+        }
+        .ClaimToken {
+            display: none;
+        }
+        .numField {
+            padding: 3px 5px;
+            background-color: #00d6d6;
+            border: none;
+            width: 80px;
+            color: #222;
+            font-weight: bold;
+        }
+    </style>
+    <script src="ethers.js" type="application/javascript" crossorigin="anonymous"></script>
+</head>
+<BODY>
+<pre>
+    <A href="index.html">[ HOME ]</A> <A href="mint.html">[ MINT ]</A> <A href="mycards.html">[ MY WALLET ]</A> <A href="roadmap.html">[ ROADMAP ]</A> <A href="https://discord.gg/ngNVt2R2s2">[ DISCORD ]</A> <A href="https://twitter.com/AsciiSmiles">[ Twitter ]</A>
+
+    ░█████╗░░██████╗░█████╗░██╗██╗    ░██████╗███╗░░░███╗██╗██╗░░░░░███████╗░██████╗
+    ██╔══██╗██╔════╝██╔══██╗██║██║    ██╔════╝████╗░████║██║██║░░░░░██╔════╝██╔════╝
+    ███████║╚█████╗░██║░░╚═╝██║██║    ╚█████╗░██╔████╔██║██║██║░░░░░█████╗░░╚█████╗░
+    ██╔══██║░╚═══██╗██║░░██╗██║██║    ░╚═══██╗██║╚██╔╝██║██║██║░░░░░██╔══╝░░░╚═══██╗
+    ██║░░██║██████╔╝╚█████╔╝██║██║    ██████╔╝██║░╚═╝░██║██║███████╗███████╗██████╔╝
+    ╚═╝░░╚═╝╚═════╝░░╚════╝░╚═╝╚═╝    ╚═════╝░╚═╝░░░░░╚═╝╚═╝╚══════╝╚══════╝╚═════╝░
+                                                                                              \|||/
+    <b>ASCII Smiles NFT mint page</b>                                                                (o o)
+-------------------------------------------------------------------------------------------ooO-(_)-Ooo--------
+
+</pre>
+<div>
+<div>
+On this page you can see your cards, set card nickname and claim ASCII Smiles Token for every NFT owned.<BR>
+Coin name change costs <B>50 ASC</B> tokens.
+<PRE>
+    - The <B>daily</B> amount is based on the Rarity parameter:
+    * 0.1 token for the Common card,
+    * 0.8 tokens for the Uncommon card,
+    * 1.5 tokens for the Rare card,
+    * 3 tokens for the Epic card,
+    * 10 tokens for the Legendary card.
+
+    Token distribution start date is: 1th December 2021 00:00 GMT.
+
+    - The maximum supply is <B>60,000,000</B> ASC tokens (5,000,000 on every blockchain used).
+</PRE>
+    <BR>
+    <DIV id="blockchains">
+        <B>ASCII Smiles NFT is deployed to following blockchains (click to add/switch).</B><BR><BR>
+        <SPAN id="chain1">[Ethereum]</SPAN>
+        <SPAN id="chain56">[Binance]</SPAN>
+        <SPAN id="chain43114">[Avalanche]</SPAN>
+        <SPAN id="chain250">[Fantom]</SPAN>
+        <SPAN id="chain137">[Polygon]</SPAN><BR><BR>
+        <SPAN id="chain128">[Huobi&nbsp;ECO]</SPAN>
+        <SPAN id="chain66">[OKExChain]</SPAN>
+        <SPAN id="chain42220">[Celo]</SPAN>
+        <SPAN id="chain1666600000">[Harmony]</SPAN>
+        <SPAN id="chain1285">[Moonriver]</SPAN>
+        <SPAN id="chain25">[Cronos]</SPAN>
+        <SPAN id="chain1313161554">[Aurora]</SPAN><BR><BR>
+        <span id="chainWrong">Connected blockchain is not supported</span>
+    </DIV>
+
+    <DIV id="divConnect">
+        <button id="webConnect" class="AsciiButton">[ Connect to Web3 wallet (MetaMask) ]</button>
+    </DIV>
+    <DIV id="mintInfo">
+        You connected as : <B><span id="myAddress"></span></B><BR><BR>
+        Balances: <BR>
+        <B id="myBalance">0.00</B><BR>
+        <B id="myBalanceASC">0.000</B> ASC (ASCII Smiles Token)<BR>
+        You have: <B><span id="myNFTBal">0</span></B> ASCII Smiles NFTs.<BR>
+        <BR>Gas Price: ~<B id="ETHGas">0.00 gwei</B><BR><BR>
+        <div id="ClaimToken">
+            For every owned ASCII Smiles NFT you can claim ASCII Smiles Tokens [ASC]<BR><BR>
+            Claimable amount: <B id="Climable">0.00</B> ASC <button class="AsciiButton" id="ASCClaim">Claim</button>&nbsp;&nbsp;(Claimable only after collection reveal)<BR><BR><BR>
+            <div id="MintStatus"></div>
+        </div>
+        <DIV id="myCards" class="smilediv">
+
+        </DIV>
+</div>
+<DIV>
+<pre>
+_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+
+    ░█─── ▀█▀ ░█▄─░█ ░█─▄▀ ░█▀▀▀█
+    ░█─── ░█─ ░█░█░█ ░█▀▄─ ─▀▀▀▄▄
+    ░█▄▄█ ▄█▄ ░█──▀█ ░█─░█ ░█▄▄▄█
+
+_,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,__,.-'~'-.,_
+
+</pre>
+    <DIV>
+<PRE>
+    <A href="https://discord.gg/ngNVt2R2s2">[ DISCORD ]</A> <A href="https://twitter.com/AsciiSmiles">[ Twitter ]</A>
+
+    [ NFT: <B>0x0A5C1108D016b2486433cd838450c9ef932e03d5</B> ] [ Token: <B>0xaAAaaAaaA12c8d5501D3AEfd29C1969a3270DD38</B> ]
+
+    <A target="_blank" href="https://opensea.io/collection/ascii-smiles-nft">[ OpenSea collection ]</A>    Listed on <A href="https://nftcalendar.io/event/ascii-smiles-nft/">[ NFT Calendar ]</A>
+</PRE>
+    </DIV>
+</DIV>
+<div>
+<pre>
+
+----------------8&lt;-------------8&lt;---------------[ cut here ]--------------8&lt;-----------------------8&lt;---------
+
+          &lt;3 This website is hosted on the IPFS distributed network. No central server involved. &lt;3
+   ____    ____   ___ ____  _       _    __    ___  _____ _____     __           _ _
+  / __ \  |___ \ / _ \___ \/ |     /_\  / _\  / __\ \_   \\_   \   / _\_ __ ___ (_) | ___  ___
+ / / _` |   __) | | | |__) | |    //_\\ \ \  / /     / /\/ / /\/   \ \| '_ ` _ \| | |/ _ \/ __|
+| | (_  |  / __/| |_| / __/| |   /  _  \_\ \/ /___/\/ /_/\/ /_     _\ \ | | | | | | |  __/\__ \
+ \ \__,_| |_____|\___/_____|_|   \_/ \_/\__/\____/\____/\____/     \__/_| |_| |_|_|_|\___||___/
+
+    NO cookies or any web analytics used! :-P
+</pre>
+</div>
+
+<SCRIPT>
+    let provider;
+    let signer;
+    const NFTAddress = "0x0A5c1108d016b2486433cD838450c9ef932e03d5";
+    const ASCAddress = "0xaAAaaAaaA12c8d5501D3AEfd29C1969a3270DD38";
+    let myAddress = '';
+    let coinTickers = {
+        1 : "ETH",
+        56 : "BNB",
+        43114 : "AVAX",
+        250 : "FTM",
+        137 : "MATIC",
+        128 : "HT",
+        66 : "OKT",
+        42220 : "CELO",
+        25 : "CRO",
+        1666600000 : "ONE",
+        1285 : "MOVR",
+        1313161554 : "ETH"
+    };
+    let coinTicker = '';
+    const NFTAbi = [
+        // Get the account balance
+        "function totalSupply() public view returns(uint256)",
+        "function maxSupply() public view returns(uint16)",
+
+        "function balanceOf(address) view returns (uint)",
+        "function tokenURI(uint256) public view returns (string)",
+        "function walletOfOwner(address) public view returns(uint256[])",
+        "function setNickname(uint256, string) public",
+        // An event triggered whenever anyone transfers to someone else
+        "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)"
+    ];
+    let NFTContract;
+    const TokenAbi = [
+        // Get the account balance
+        "function totalSupply() public view returns(uint256)",
+        "function maxSupply() public view returns(uint16)",
+
+        "function balanceOf(address) view returns (uint)",
+        "function claimByIds(uint256[]) external",
+        "function getClaimed(uint256) public view returns (uint256)",
+        // An event triggered whenever anyone transfers to someone else
+        "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)"
+    ];
+    let ASCContract;
+    const everySecond = {'Common': 0.1/86400, 'Uncommon' : 0.8/86400, 'Rare' : 1.5/86400, 'Epic' : 3/86400, 'Legendary' : 10/86400};
+    const startDate = 1638316800;
+    let ClNFTs = [];
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+        if (typeof window.ethereum !== "undefined") {
+            provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+            provider.on("network", (newNetwork, oldNetwork) => {
+                if (oldNetwork) {
+                    window.location.reload();
+                }
+            });
+            window.ethereum.autoRefreshOnNetworkChange = false;
+            NFTContract = new ethers.Contract(NFTAddress, NFTAbi, provider);
+            ASCContract = new ethers.Contract(ASCAddress, TokenAbi, provider);
+            signer = provider.getSigner();
+            provider.on("block", (blockNum) => {
+//                if(myAddress !== '')
+//                    ShowMintData();
+            });
+            try {
+                signer.getAddress().then((result) => {
+                    myAddress = result;
+                    window.ethereum.on('accountsChanged', function (accounts) {
+                        window.location.reload();
+                    });
+                    ShowMintData();
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        } else {
+            document.getElementById('webConnect').disabled = false;
+            alert('Not found Web3 compatible Ethereum wallet.');
+        }
+
+        document.getElementById('webConnect').addEventListener('click', ConnectEther);
+        document.getElementById('blockchains').addEventListener('click', SwitchNetwork);
+
+    });
+
+    async function ConnectEther() {
+        if (typeof window.ethereum !== "undefined") {
+            document.getElementById('webConnect').disabled = true;
+            try {
+                myAddress = await provider.send("eth_requestAccounts", []);
+                myAddress = myAddress[0];
+                window.ethereum.on('accountsChanged', function (accounts) {
+                    window.location.reload();
+                });
+                ShowMintData();
+            } catch (e) {
+                document.getElementById('webConnect').disabled = false;
+                alert("Can not connect to Web3 wallet (MetaMask)");
+            }
+        } else {
+            document.getElementById('webConnect').disabled = false;
+            alert('Not found Web3 compatible Ethereum wallet.');
+        }
+    }
+
+    async function ShowMintData() {
+        let chainId = await provider.getNetwork();
+        let divChain =  document.getElementById('chain' + chainId.chainId);
+        if(divChain) {
+            divChain.className = 'active';
+            coinTicker = coinTickers[chainId.chainId];
+        } else {
+            document.getElementById('mintInfo').style.display='none';
+            document.getElementById('chainWrong').style.display='block';
+//            return;
+        }
+
+        let timeNow = Math.floor(Date.now()/1000);
+        document.getElementById('divConnect').style.display = 'none';
+        document.getElementById('mintInfo').style.display = 'block';
+        document.getElementById('myAddress').innerHTML = myAddress;
+        let EthBalance = await provider.getBalance(myAddress);
+        document.getElementById('myBalance').innerHTML = ethers.utils.formatEther(EthBalance) + ' ' + coinTicker;
+        let AscBalance = await ASCContract.balanceOf(myAddress);
+        document.getElementById('myBalanceASC').innerHTML = ethers.utils.formatEther(AscBalance);
+        let myBalance = await NFTContract.balanceOf(myAddress);
+        document.getElementById('myNFTBal').innerHTML = myBalance;
+        document.getElementById('ASCClaim').addEventListener('click', ClaimToken);
+
+        let gPrice = await provider.getGasPrice();
+        gPrice = gPrice/1000000000;
+        document.getElementById('ETHGas').innerHTML = gPrice.toFixed(1) + ' gwei';
+        let feeAmount = 0.0105 * gPrice / 100;
+        let ETHFee = ethers.utils.parseUnits(feeAmount.toFixed(4), "ether");
+        let myCards = document.getElementById('myCards');
+        let ClAmount = 0;
+        ClNFTs = [];
+        if(myBalance > 0) {
+            let myNFTs = await NFTContract.walletOfOwner(myAddress);
+            for (const NFTID of myNFTs)  {
+                let NftData  = await NFTContract.tokenURI(NFTID);
+                const result = JSON.parse(atob(NftData.substring(29)));
+//                console.log(result);
+                if(result.description !== 'Unrevealed') {
+                    let Claimed = ethers.utils.formatEther(await ASCContract.getClaimed(NFTID));
+                    ClAmount += (timeNow - startDate) * everySecond[result.attributes[0].value] - Claimed;
+                    if (ClNFTs.length < 50)
+                        ClNFTs.push(NFTID);
+                }
+                result.name = decodeUnicode(result.name);
+                var div = document.createElement('div');
+                div.className = 'cardDiv';
+                var nameDiv = document.createElement('div');
+                nameDiv.className = 'cardName';
+                let inputName = document.createElement('input');
+                inputName.className = 'inputName';
+                inputName.value = result.name;
+                inputName.dataset['prevName'] = result.name;
+                inputName.addEventListener('click', function (e) {
+                    e.currentTarget.nextSibling.className = 'saveImg';
+                });
+                nameDiv.appendChild(inputName);
+                let editImg = document.createElement('div');
+                editImg.className = 'editImg';
+                editImg.id='NickNFT' + NFTID;
+                nameDiv.appendChild(editImg);
+                editImg.addEventListener('click', function (e) {
+                    if(e.currentTarget.className === 'editImg') {
+                        e.currentTarget.className = 'saveImg';
+                        e.currentTarget.previousSibling.focus();
+                    }
+                    if(e.currentTarget.className === 'saveImg') {
+                        setNickname(e);
+                    }
+                });
+
+                var img = document.createElement('img');
+                if(result.description === 'Unrevealed') {
+                    img.setAttribute('src', 'https://ipfs.io/ipfs/Qmb7zK8nutb1Vh9gpitHpbhyZXxfCV8Af4rp5kaW67WLcS');
+                } else {
+                    img.setAttribute('src', result.image);
+                    div.title = result.name + "\n";
+                    div.title += 'Rarity: ' + result.attributes[0].value + "\n\n";
+                    if (result.attributes[1].value > '')
+                        div.title += 'Hat: ' + result.attributes[1].value + "\n";
+                    div.title += 'Eyes: ' + result.attributes[2].value + "\n";
+                    div.title += 'Nose: ' + result.attributes[3].value + "\n";
+                    div.title += 'Mouth: ' + result.attributes[4].value + "\n";
+                    if (result.attributes[5].value > '')
+                        div.title += 'Beard: ' + result.attributes[5].value + "\n";
+                    div.title += 'ASCII Smile: ' + result.attributes[6].value + "\n";
+                }
+                div.appendChild(nameDiv);
+                div.appendChild(img);
+                myCards.appendChild(div);
+
+                //                console.log(NftData);
+            }
+            document.getElementById('Climable').innerText = ClAmount.toFixed(4);
+        }
+    }
+
+    async function ClaimToken() {
+        const ASCWithSigner = ASCContract.connect(signer);
+        try {
+            const tx = await ASCWithSigner.claimByIds(ClNFTs);
+
+            const receipt = await tx.wait();
+            if(receipt.status === 1) {
+                document.getElementById('MintStatus').innerHTML = '<B>Your ASC tokens claimed successfully!</B>';
+                document.getElementById('Climable').innerText = '0.00';
+            }
+        } catch (e) {
+            document.getElementById('MintStatus').innerHTML = '<I>Error: '+e.message+'</I>';
+        }
+    }
+
+    const toHex = (num) => {
+        return '0x'+num.toString(16)
+    };
+
+    async function SwitchNetwork(evt) {
+        if(evt.target.id === 'blockchains') return;
+        let chainId = await provider.getNetwork();
+        let clickChain = evt.target.id.substring(5);
+        if(chainId.chainId === parseInt(clickChain))
+            return;
+        let chainsData = {
+            '1' : {
+                chainId: toHex(1),
+                chainName: "Ethereum Mainnet",
+                nativeCurrency: {
+                    name: "Ether",
+                    symbol: "ETH",
+                    decimals: 18
+                },
+                rpcUrls: [
+                    "https://api.mycryptoapi.com/eth",
+                    "https://cloudflare-eth.com"
+                ],
+                blockExplorerUrls: ["https://etherscan.io"]
+            }, '56' : {
+                chainId: toHex(56),
+                chainName: "Binance Smart Chain Mainnet",
+                nativeCurrency: {
+                    name: "BNB",
+                    symbol: "BNB",
+                    decimals: 18
+                },
+                rpcUrls: ["https://bsc-dataseed1.binance.org"],
+                blockExplorerUrls: ["https://bscscan.com"]
+            }, '43114' : {
+                chainId: toHex(43114),
+                chainName: "Avalanche Mainnet",
+                nativeCurrency: {
+                    name: "Avalanche",
+                    symbol: "AVAX",
+                    decimals: 18
+                },
+                rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
+                blockExplorerUrls: ["https://snowtrace.io/"]
+            }, '250' : {
+                chainId: toHex(250),
+                chainName: "Fantom Opera",
+                nativeCurrency: {
+                    name: "Fantom",
+                    symbol: "FTM",
+                    decimals: 18
+                },
+                rpcUrls: ["https://rpc.ftm.tools"],
+                blockExplorerUrls: ["https://ftmscan.com"]
+            }, '137' : {
+                chainId: toHex(137),
+                chainName: "Polygon Mainnet",
+                nativeCurrency: {
+                    name: "MATIC",
+                    symbol: "MATIC",
+                    decimals: 18
+                },
+                rpcUrls: ["https://polygon-rpc.com/"],
+                blockExplorerUrls: ["https://polygonscan.com/"]
+            }, '128' : {
+                chainId: toHex(128),
+                chainName: "Huobi ECO Chain Mainnet",
+                nativeCurrency: {
+                    name: "Huobi Coin",
+                    symbol: "HT",
+                    decimals: 18
+                },
+                rpcUrls: ["https://http-mainnet.hecochain.com"],
+                blockExplorerUrls: ["https://hecoinfo.com"]
+            }, '66' : {
+                chainId: toHex(66),
+                chainName: "OKExChain Mainnet",
+                nativeCurrency: {
+                    name: "OKExChain Global Utility Token",
+                    symbol: "OKT",
+                    decimals: 18
+                },
+                rpcUrls: ["https://exchainrpc.okex.org"],
+                blockExplorerUrls: ["https://www.oklink.com/okexchain"]
+            }, '42220' : {
+                chainId: toHex(42220),
+                chainName: "Celo Mainnet",
+                nativeCurrency: {
+                    name: "CELO",
+                    symbol: "CELO",
+                    decimals: 18
+                },
+                rpcUrls: ["https://forno.celo.org"],
+                blockExplorerUrls: ["https://explorer.celo.org"]
+            }, '25' : {
+                chainId: toHex(25),
+                chainName: "Cronos Mainnet Beta",
+                nativeCurrency: {
+                    name: "Crypto.org Coin",
+                    symbol: "CRO",
+                    decimals: 18
+                },
+                rpcUrls: ["https://evm-cronos.crypto.org"],
+                blockExplorerUrls: ["https://cronos.crypto.org/explorer"]
+            }, '1666600000' : {
+                chainId: toHex(1666600000),
+                chainName: "Harmony Mainnet Shard 0",
+                nativeCurrency: {
+                    name: "ONE",
+                    symbol: "ONE",
+                    decimals: 18
+                },
+                rpcUrls: ["https://api.harmony.one"],
+                blockExplorerUrls: ["https://explorer.harmony.one"]
+            }, '1285' : {
+                chainId: toHex(1285),
+                chainName: "Moonriver",
+                nativeCurrency: {
+                    name: "Moonriver",
+                    symbol: "MOVR",
+                    decimals: 18
+                },
+                rpcUrls: ["https://rpc.moonriver.moonbeam.network"],
+                blockExplorerUrls: ["https://blockscout.moonriver.moonbeam.network"]
+            }, '1313161554' : {
+                chainId: toHex(1313161554),
+                chainName: "Aurora MainNet",
+                nativeCurrency: {
+                    name: "Ether",
+                    symbol: "ETH",
+                    decimals: 18
+                },
+                rpcUrls: ["https://mainnet.aurora.dev"],
+                blockExplorerUrls: ["https://explorer.mainnet.aurora.dev/"]
+            }
+        };
+
+        if (typeof window.ethereum === "undefined") {
+            console.info("MetaMask isn't installed!");
+            return;
+        }
+        try {
+            await provider.send('wallet_switchEthereumChain',
+                [{ chainId: toHex(parseInt(clickChain)) }]
+            );
+        } catch (switchError) {
+            if(typeof switchError === "string") {
+                alert('Your wallet do not support network switch. Switch network manually if possible.');
+                return;
+            }
+            await provider.send('wallet_addEthereumChain',
+                [chainsData[clickChain]]
+            );
+        }
+    }
+
+
+    async function setNickname(ent) {
+        let nickInput = ent.currentTarget.previousSibling;
+        if(nickInput.dataset['prevName'] === nickInput.value)
+            return;
+        let ASCBalance = parseFloat(document.getElementById('myBalanceASC').innerHTML);
+        if(ASCBalance < 50) {
+            alert('You do not have 50 ASC in your wallet to change the nickname.');
+            return;
+        }
+        const NFTWithSigner = NFTContract.connect(signer);
+        let nickname = nickInput.value;
+        let nftID = parseInt(ent.currentTarget.id.substring(7));
+        try {
+            const tx = await NFTWithSigner.setNickname(nftID, nickname);
+
+            const receipt = await tx.wait();
+            if(receipt.status === 1) {
+                alert('NFT nickname set sucessfully!');
+                nickInput.dataset['prevName'] = nickname;
+            }
+        } catch (e) {
+            console.log(e);
+            alert('NFT nickname set error!');
+        }
+    }
+
+    function decodeUnicode(text) {
+        const length = text.length;
+        const bytes = new Uint8Array(length);
+        for (let i = 0; i < length; i++) {
+            bytes[i] = text.charCodeAt(i);
+        }
+        const decoder = new TextDecoder(); // default is utf-8
+        return decoder.decode(bytes);
+    }
+    function mintFinished() {
+        document.getElementById('Mint').innerHTML = 'The minting is finished. Thank you for your support!';
+    }
+
+</SCRIPT>
+</body>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, width=1000">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    <link rel="preload" as="font" type="font/ttf" href="DOSVGA.ttf" crossorigin="anonymous">
+    <title>ASCII Smiles NFT mint simulator</title>
+    <style>
+        @font-face {
+            font-family: DOS_VGA;
+            src: url(DOSVGA.ttf);
+        }
+        body {
+            font-family: DOS_VGA, monospace;
+            font-size: 16px;
+            line-height: 1;
+            width: 1000px;
+            background-color: #000080;
+            color: #00e3f1;
+        }
+        div#mypics {
+            min-height: 299px;
+            margin: 32px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .smilediv > div {
+            margin: 10px;
+            width: 165px;
+            height: 279px;
+            position: relative;
+        }
+        .smilediv > div >img {
+            width: 165px;
+            height: 279px;
+        }
+        .smilediv > div:active:after{
+            position: absolute;
+            top:20px;
+            left: 10px;
+            background-color: white;
+            padding: 8px;
+            color: #222;
+            border: solid 1px grey;
+            content:attr(title);
+        }
+
+        pre {
+            font-family: DOS_VGA, monospace;
+            font-size: 16px;
+        }
+        b {
+            color: white;
+            font-size: 16px;
+            font-weight: normal;
+        }
+        #generate {
+            background-color: white;
+            padding: 3px 30px;
+            cursor: pointer;
+            border: 0;
+            color: #222;
+            font-weight: bold;
+            box-shadow: 8px 8px 0 #000;
+        }
+        #generate:hover {
+            background-color: #f8fc50;
+        }
+        #generate:focus {
+            background-color: #f8fc50;
+        }
+        #generate:active {
+            background-color: #f8fc50;
+            box-shadow: none;
+            transform: translate(3px, 3px);
+        }
+        #numimages {
+            padding: 3px 5px;
+            background-color: #00d6d6;
+            border: none;
+            width: 80px;
+            color: #222;
+            font-weight: bold;
+        }
+        a{
+            text-decoration: none;
+            color: white;
+        }
+    </style>
+    <script src="script.js"></script>
+</head>
+<body>
+<pre>
+    <A href="index.html">[ HOME ]</A> <A href="mint.html">[ MINT ]</A> <A href="collection.html">[ PREVIEW ]</A> <A href="roadmap.html">[ ROADMAP ]</A> <A href="https://discord.gg/ngNVt2R2s2">[ DISCORD ]</A> <A href="https://twitter.com/AsciiSmiles">[ Twitter ]</A>
+
+    ░█████╗░░██████╗░█████╗░██╗██╗    ░██████╗███╗░░░███╗██╗██╗░░░░░███████╗░██████╗
+    ██╔══██╗██╔════╝██╔══██╗██║██║    ██╔════╝████╗░████║██║██║░░░░░██╔════╝██╔════╝
+    ███████║╚█████╗░██║░░╚═╝██║██║    ╚█████╗░██╔████╔██║██║██║░░░░░█████╗░░╚█████╗░
+    ██╔══██║░╚═══██╗██║░░██╗██║██║    ░╚═══██╗██║╚██╔╝██║██║██║░░░░░██╔══╝░░░╚═══██╗
+    ██║░░██║██████╔╝╚█████╔╝██║██║    ██████╔╝██║░╚═╝░██║██║███████╗███████╗██████╔╝
+    ╚═╝░░╚═╝╚═════╝░░╚════╝░╚═╝╚═╝    ╚═════╝░╚═╝░░░░░╚═╝╚═╝╚══════╝╚══════╝╚═════╝░
+                                                                                              \|||/
+    <b>ASCII Smiles NFT mint simulator</b>                                                           (o o)
+-------------------------------------------------------------------------------------------ooO-(_)-Ooo--------
+
+</pre>
+<div>
+<pre>Using this page you can <b>simulate</b> ASCII smiles NFT mint and make a preview of the collection.
+
+ASCII Smiles will <b>not</b> be exactly the same on Ethereum but parts and probabilities in this simulator are <b>exact</b>.
+Hold a mouse cursor over the card to see traits used.
+
+</pre></div>
+<div></div>
+<label for="numimages">Smiles count to create:</label> <input type="number" id="numimages"> <input id="generate" type="submit" value="[ Mint ]">
+<div id="mypics" class="smilediv"></div>
+<div>
+<pre>
+
+----------------8&lt;-------------8&lt;---------------[ cut here ]--------------8&lt;-----------------------8&lt;---------
+
+          &lt;3 This website is hosted on the IPFS distributed network. No central server involved. &lt;3
+   ____    ____   ___ ____  _       _    __    ___  _____ _____     __           _ _
+  / __ \  |___ \ / _ \___ \/ |     /_\  / _\  / __\ \_   \\_   \   / _\_ __ ___ (_) | ___  ___
+ / / _` |   __) | | | |__) | |    //_\\ \ \  / /     / /\/ / /\/   \ \| '_ ` _ \| | |/ _ \/ __|
+| | (_  |  / __/| |_| / __/| |   /  _  \_\ \/ /___/\/ /_/\/ /_     _\ \ | | | | | | |  __/\__ \
+ \ \__,_| |_____|\___/_____|_|   \_/ \_/\__/\____/\____/\____/     \__/_| |_| |_|_|_|\___||___/
+
+</pre>
+WoW! Such counter! <a href="https://www.simple-counter.com/" target="_blank"><img src="https://www.simple-counter.com/hit.php?id=zvvvvqkkf&nd=8&nc=4&bc=14" border="0" alt="Hit Counter"></a> NO cookies used! :-P
+</div>
+</body>
